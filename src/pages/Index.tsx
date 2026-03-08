@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, UtensilsCrossed, Cake, Clock } from "lucide-react";
+import { ArrowRight, UtensilsCrossed, Soup, Clock, Cake } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import heroBanner from "@/assets/hero-banner.jpg";
 import { motion } from "framer-motion";
@@ -25,7 +25,7 @@ export default function Index() {
               Koketso Dining & Bakery
             </h1>
             <p className="text-card/80 text-lg mb-8">
-              Freshly baked goods, handcrafted burgers & chef's specials — delivered to your door or ready for pickup.
+              From hearty stews & pap to fresh pastas, rice dishes, baked treats & more — authentic flavours delivered to your door or ready for pickup.
             </p>
             <div className="flex gap-3">
               <Button asChild size="lg">
@@ -42,8 +42,8 @@ export default function Index() {
       <section className="container mx-auto px-4 py-16">
         <div className="grid md:grid-cols-3 gap-8">
           {[
-            { icon: UtensilsCrossed, title: "Fresh Daily", desc: "Everything made fresh every morning" },
-            { icon: Cake, title: "Custom Cakes", desc: "Order cakes for any celebration" },
+            { icon: Soup, title: "Traditional Meals", desc: "Stews, pap, rice & hearty home-cooked favourites" },
+            { icon: UtensilsCrossed, title: "Full Menu", desc: "Pastas, burgers, baked goods & chef's specials" },
             { icon: Clock, title: "Quick Service", desc: "Order ahead, skip the queue" },
           ].map((f, i) => (
             <motion.div
