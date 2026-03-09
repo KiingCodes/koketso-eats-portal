@@ -3,8 +3,10 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import Navbar from "@/components/Navbar";
-import { Package, Clock } from "lucide-react";
+import { Package, Clock, FileText, CreditCard, Banknote } from "lucide-react";
 import { format } from "date-fns";
 
 interface OrderItem {
@@ -20,6 +22,9 @@ interface Order {
   total: number;
   notes: string | null;
   created_at: string;
+  payment_method: string | null;
+  payment_status: string | null;
+  payment_proof_url: string | null;
   order_items: OrderItem[];
 }
 
@@ -32,10 +37,18 @@ const statusColors: Record<string, string> = {
   cancelled: "bg-destructive text-destructive-foreground",
 };
 
+const paymentStatusColors: Record<string, string> = {
+  pending: "bg-muted text-muted-foreground",
+  verified: "bg-success text-success-foreground",
+  rejected: "bg-destructive text-destructive-foreground",
+};
+
 export default function Orders() {
   const { user } = useAuth();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
+  const [proofDialogOpen, setProofDialogOpen] = useState(false);
+  const [selectedProofUrl, setSelectedProofUrl] = useState<string | null>(null);
 
   useEffect(() => {
     if (!user) return;
@@ -68,15 +81,47 @@ export default function Orders() {
             {orders.map((order) => (
               <Card key={order.id}>
                 <CardContent className="p-4 space-y-3">
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between flex-wrap gap-2">
                     <div className="flex items-center gap-2">
                       <Clock className="h-4 w-4 text-muted-foreground" />
                       <span className="text-sm text-muted-foreground">
                         {format(new Date(order.created_at), "dd MMM yyyy, HH:mm")}
                       </span>
                     </div>
-                    <Badge className={statusColors[order.status] || ""}>{order.status}</Badge>
+                    <div className="flex items-center gap-2">
+                      <Badge className={statusColors[order.status] || ""}>{order.status}</Badge>
+                      {order.payment_status && (
+                        <Badge className={paymentStatusColors[order.payment_status] || ""}>
+                          {order.payment_status}
+                        </Badge>
+                      )}
+                    </div>
                   </div>
+                  
+                  {order.payment_method && (
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      {order.payment_method === "bank_transfer" ? (
+                        <CreditCard className="h-4 w-4" />
+                      ) : (
+                        <Banknote className="h-4 w-4" />
+                      )}
+                      <span>{order.payment_method === "bank_transfer" ? "Bank Transfer" : "Cash on Delivery"}</span>
+                      {order.payment_proof_url && (
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          className="h-auto p-0 text-primary hover:text-primary/80"
+                          onClick={() => {
+                            setSelectedProofUrl(order.payment_proof_url);
+                            setProofDialogOpen(true);
+                          }}
+                        >
+                          <FileText className="h-4 w-4 mr-1" />
+                          View Proof
+                        </Button>
+                      )}
+                    </div>
+                  )}
                   <div className="space-y-1">
                     {order.order_items.map((item) => (
                       <div key={item.id} className="flex justify-between text-sm">
@@ -98,6 +143,23 @@ export default function Orders() {
           </div>
         )}
       </div>
+
+      <Dialog open={proofDialogOpen} onOpenChange={setProofDialogOpen}>
+        <DialogContent className="sm:max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Payment Proof</DialogTitle>
+          </DialogHeader>
+          {selectedProofUrl && (
+            <div className="mt-4">
+              <img 
+                src={selectedProofUrl} 
+                alt="Payment proof" 
+                className="w-full h-auto rounded-md border"
+              />
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
