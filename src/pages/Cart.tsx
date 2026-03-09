@@ -18,6 +18,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { useStoreSettings } from "@/hooks/use-store-settings";
 
 export default function Cart() {
   const { items, updateQuantity, removeItem, clearCart, total } = useCart();
@@ -29,6 +30,7 @@ export default function Cart() {
   const [showBankDetails, setShowBankDetails] = useState(false);
   const [paymentProof, setPaymentProof] = useState<File | null>(null);
   const [proofPreview, setProofPreview] = useState<string | null>(null);
+  const { bankDetails } = useStoreSettings();
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -225,23 +227,23 @@ export default function Cart() {
                 <CardContent className="p-4 space-y-2">
                   <div>
                     <p className="text-sm text-muted-foreground">Bank Name</p>
-                    <p className="font-semibold">First National Bank (FNB)</p>
+                    <p className="font-semibold">{bankDetails.bank_name}</p>
                   </div>
                   <div>
                     <p className="text-sm text-muted-foreground">Account Name</p>
-                    <p className="font-semibold">Mamello's Kitchen</p>
+                    <p className="font-semibold">{bankDetails.account_name}</p>
                   </div>
                   <div>
                     <p className="text-sm text-muted-foreground">Account Number</p>
-                    <p className="font-semibold">62 8765 4321 0</p>
+                    <p className="font-semibold">{bankDetails.account_number}</p>
                   </div>
                   <div>
                     <p className="text-sm text-muted-foreground">Branch Code</p>
-                    <p className="font-semibold">250655</p>
+                    <p className="font-semibold">{bankDetails.branch_code}</p>
                   </div>
                   <div>
                     <p className="text-sm text-muted-foreground">Reference</p>
-                    <p className="font-semibold">Your Order #{Math.random().toString(36).substr(2, 9).toUpperCase()}</p>
+                    <p className="font-semibold">{bankDetails.reference_prefix || "ORDER"}-{Math.random().toString(36).substr(2, 9).toUpperCase()}</p>
                   </div>
                   <div className="pt-2 border-t">
                     <p className="text-sm text-muted-foreground">Amount to Pay</p>
