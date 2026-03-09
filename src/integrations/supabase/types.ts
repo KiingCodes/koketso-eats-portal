@@ -167,7 +167,9 @@ export type Database = {
           name: string
           on_sale: boolean | null
           price: number
+          sale_end_date: string | null
           sale_price: number | null
+          sale_start_date: string | null
           updated_at: string
         }
         Insert: {
@@ -181,7 +183,9 @@ export type Database = {
           name: string
           on_sale?: boolean | null
           price: number
+          sale_end_date?: string | null
           sale_price?: number | null
+          sale_start_date?: string | null
           updated_at?: string
         }
         Update: {
@@ -195,7 +199,9 @@ export type Database = {
           name?: string
           on_sale?: boolean | null
           price?: number
+          sale_end_date?: string | null
           sale_price?: number | null
+          sale_start_date?: string | null
           updated_at?: string
         }
         Relationships: [
