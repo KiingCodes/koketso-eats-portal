@@ -31,13 +31,13 @@ export function useStoreSettings() {
       if (data) {
         for (const row of data as { key: string; value: Record<string, unknown> }[]) {
           if (row.key === "bank_details") {
-            setBankDetails({ ...DEFAULT_BANK_DETAILS, ...(row.value as BankDetails) });
+            setBankDetails({ ...DEFAULT_BANK_DETAILS, ...(row.value as unknown as BankDetails) });
           } else if (row.key === "business_hours") {
-            setBusinessHours({ ...DEFAULT_BUSINESS_HOURS, ...(row.value as BusinessHours) });
+            setBusinessHours({ ...DEFAULT_BUSINESS_HOURS, ...(row.value as unknown as BusinessHours) });
           } else if (row.key === "notification_preferences") {
             setNotificationPreferences({
               ...DEFAULT_NOTIFICATION_PREFERENCES,
-              ...(row.value as NotificationPreferences),
+              ...(row.value as unknown as NotificationPreferences),
             });
           }
         }
