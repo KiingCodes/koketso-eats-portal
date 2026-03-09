@@ -72,6 +72,83 @@ export default function Index() {
         </div>
       </section>
 
+      {/* Image Carousel */}
+      <section className="py-16 overflow-hidden">
+        <div className="container mx-auto px-4">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-10"
+          >
+            <h2 className="font-display text-3xl md:text-4xl font-bold mb-3">
+              Taste the Diversity
+            </h2>
+            <p className="text-muted-foreground max-w-2xl mx-auto">
+              From traditional South African comfort foods to international favourites — every dish tells a story
+            </p>
+          </motion.div>
+
+          <Carousel
+            plugins={[autoplayPlugin.current]}
+            className="w-full max-w-5xl mx-auto"
+            onMouseEnter={autoplayPlugin.current.stop}
+            onMouseLeave={autoplayPlugin.current.reset}
+          >
+            <CarouselContent>
+              {[
+                { img: carouselStew, title: "Traditional Stews & Pap", desc: "Hearty home-cooked classics" },
+                { img: carouselBakery, title: "Artisan Baked Goods", desc: "Fresh from our ovens daily" },
+                { img: carouselPasta, title: "Comfort Pastas", desc: "Creamy, delicious, satisfying" },
+              ].map((slide, i) => (
+                <CarouselItem key={i}>
+                  <div className="relative aspect-[16/9] md:aspect-[21/9] rounded-xl overflow-hidden group">
+                    <img
+                      src={slide.img}
+                      alt={slide.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-foreground/90 via-foreground/40 to-transparent" />
+                    <div className="absolute bottom-0 left-0 right-0 p-8 md:p-12 text-card">
+                      <motion.h3
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: 0.2 }}
+                        className="font-display text-2xl md:text-4xl font-bold mb-2"
+                      >
+                        {slide.title}
+                      </motion.h3>
+                      <motion.p
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: 0.3 }}
+                        className="text-card/90 text-lg md:text-xl mb-4"
+                      >
+                        {slide.desc}
+                      </motion.p>
+                      <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: 0.4 }}
+                      >
+                        <Button asChild size="lg" variant="secondary">
+                          <Link to="/menu">Explore Menu</Link>
+                        </Button>
+                      </motion.div>
+                    </div>
+                  </div>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious className="left-4" />
+            <CarouselNext className="right-4" />
+          </Carousel>
+        </div>
+      </section>
+
       {/* Specials of the Day */}
       {featuredProducts.length > 0 && (
         <section className="bg-muted/30 py-16">
