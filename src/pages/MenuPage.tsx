@@ -72,6 +72,8 @@ interface Product {
   in_stock: boolean | null;
   category_id: string | null;
   is_featured: boolean | null;
+  on_sale: boolean | null;
+  sale_price: number | null;
 }
 
 export default function MenuPage() {

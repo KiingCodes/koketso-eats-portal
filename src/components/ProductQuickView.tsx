@@ -74,15 +74,27 @@ export default function ProductQuickView({
     setLoading(true);
     const { data, error } = await supabase
       .from("reviews")
-      .select(`
-        *,
-        profiles:user_id (full_name)
-      `)
+      .select("*")
       .eq("product_id", product.id)
       .order("created_at", { ascending: false });
 
     if (!error && data) {
-      setReviews(data as Review[]);
+      // Fetch profile names separately
+      const reviewsWithProfiles = await Promise.all(
+        data.map(async (review) => {
+          const { data: profile } = await supabase
+            .from("profiles")
+            .select("full_name")
+            .eq("user_id", review.user_id)
+            .single();
+          
+          return {
+            ...review,
+            profiles: profile || { full_name: null },
+          };
+        })
+      );
+      setReviews(reviewsWithProfiles as Review[]);
     }
     setLoading(false);
   };
