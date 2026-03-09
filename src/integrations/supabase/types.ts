@@ -128,6 +128,9 @@ export type Database = {
           delivery_address: string | null
           id: string
           notes: string | null
+          payment_method: string | null
+          payment_proof_url: string | null
+          payment_status: string | null
           status: string
           total: number
           updated_at: string
@@ -138,6 +141,9 @@ export type Database = {
           delivery_address?: string | null
           id?: string
           notes?: string | null
+          payment_method?: string | null
+          payment_proof_url?: string | null
+          payment_status?: string | null
           status?: string
           total?: number
           updated_at?: string
@@ -148,6 +154,9 @@ export type Database = {
           delivery_address?: string | null
           id?: string
           notes?: string | null
+          payment_method?: string | null
+          payment_proof_url?: string | null
+          payment_status?: string | null
           status?: string
           total?: number
           updated_at?: string
