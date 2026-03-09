@@ -11,7 +11,7 @@ import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "sonner";
-import { Plus, Edit, Trash2, Package, Users, DollarSign, ShoppingBag } from "lucide-react";
+import { Plus, Edit, Trash2, Package, Users, DollarSign, ShoppingBag, CheckCircle2, XCircle, FileText } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
@@ -43,6 +43,9 @@ interface Order {
   notes: string | null;
   created_at: string;
   user_id: string | null;
+  payment_method: string | null;
+  payment_status: string | null;
+  payment_proof_url: string | null;
   order_items: { id: string; product_name: string; quantity: number; unit_price: number }[];
 }
 
@@ -57,6 +60,8 @@ export default function AdminDashboard() {
   const [editProduct, setEditProduct] = useState<Partial<Product> | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [todaySales, setTodaySales] = useState(0);
+  const [proofDialogOpen, setProofDialogOpen] = useState(false);
+  const [selectedProofUrl, setSelectedProofUrl] = useState<string | null>(null);
 
   useEffect(() => {
     if (!loading && !isAdmin) {
@@ -153,6 +158,32 @@ export default function AdminDashboard() {
     }
   };
 
+  const updatePaymentStatus = async (orderId: string, paymentStatus: string) => {
+    const { error } = await supabase.from("orders").update({ payment_status: paymentStatus }).eq("id", orderId);
+    if (error) toast.error("Failed to update payment status");
+    else {
+      toast.success(`Payment ${paymentStatus}`);
+      
+      // Trigger notification email
+      try {
+        const order = orders.find((o) => o.id === orderId);
+        if (order) {
+          await supabase.functions.invoke("send-order-notifications", {
+            body: {
+              orderId,
+              eventType: "payment_verification",
+              paymentStatus,
+            },
+          });
+        }
+      } catch (err) {
+        console.error("Failed to send notification:", err);
+      }
+      
+      loadData();
+    }
+  };
+
   if (loading) return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
   if (!isAdmin) return null;
 
@@ -243,21 +274,85 @@ export default function AdminDashboard() {
               {orders.map((order) => (
                 <Card key={order.id}>
                   <CardContent className="p-4 space-y-3">
-                    <div className="flex items-center justify-between">
+                    <div className="flex items-center justify-between flex-wrap gap-2">
                       <span className="text-sm text-muted-foreground">
                         {format(new Date(order.created_at), "dd MMM yyyy, HH:mm")}
                       </span>
-                      <Select value={order.status} onValueChange={(v) => updateOrderStatus(order.id, v)}>
-                        <SelectTrigger className="w-36">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {ORDER_STATUSES.map((s) => (
-                            <SelectItem key={s} value={s}>{s}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                      <div className="flex items-center gap-2">
+                        <Select value={order.status} onValueChange={(v) => updateOrderStatus(order.id, v)}>
+                          <SelectTrigger className="w-36">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {ORDER_STATUSES.map((s) => (
+                              <SelectItem key={s} value={s}>{s}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
                     </div>
+                    
+                    {order.payment_method && (
+                      <div className="flex items-center justify-between flex-wrap gap-2 p-3 bg-muted/50 rounded-md">
+                        <div className="space-y-1">
+                          <p className="text-sm font-medium">
+                            Payment: {order.payment_method === "bank_transfer" ? "Bank Transfer" : "Cash on Delivery"}
+                          </p>
+                          {order.payment_status && (
+                            <Badge className={order.payment_status === "verified" ? "bg-success" : order.payment_status === "rejected" ? "bg-destructive" : "bg-muted"}>
+                              {order.payment_status}
+                            </Badge>
+                          )}
+                        </div>
+                        {order.payment_proof_url && order.payment_status === "pending" && (
+                          <div className="flex gap-2">
+                            <Button 
+                              variant="ghost" 
+                              size="sm"
+                              onClick={() => {
+                                setSelectedProofUrl(order.payment_proof_url);
+                                setProofDialogOpen(true);
+                              }}
+                            >
+                              <FileText className="h-4 w-4 mr-1" />
+                              View Proof
+                            </Button>
+                            <Button 
+                              variant="outline" 
+                              size="sm" 
+                              className="border-success text-success hover:bg-success hover:text-success-foreground"
+                              onClick={() => updatePaymentStatus(order.id, "verified")}
+                            >
+                              <CheckCircle2 className="h-4 w-4 mr-1" />
+                              Verify
+                            </Button>
+                            <Button 
+                              variant="outline" 
+                              size="sm" 
+                              className="border-destructive text-destructive hover:bg-destructive hover:text-destructive-foreground"
+                              onClick={() => updatePaymentStatus(order.id, "rejected")}
+                            >
+                              <XCircle className="h-4 w-4 mr-1" />
+                              Reject
+                            </Button>
+                          </div>
+                        )}
+                        {order.payment_proof_url && order.payment_status !== "pending" && (
+                          <Button 
+                            variant="ghost" 
+                            size="sm"
+                            onClick={() => {
+                              setSelectedProofUrl(order.payment_proof_url);
+                              setProofDialogOpen(true);
+                            }}
+                          >
+                            <FileText className="h-4 w-4 mr-1" />
+                            View Proof
+                          </Button>
+                        )}
+                      </div>
+                    )}
+                    
                     <div className="space-y-1">
                       {order.order_items.map((item) => (
                         <div key={item.id} className="flex justify-between text-sm">
@@ -338,6 +433,24 @@ export default function AdminDashboard() {
               </div>
               <Button onClick={saveProduct} className="w-full">Save Product</Button>
             </div>
+          </DialogContent>
+        </Dialog>
+
+        {/* Payment Proof Viewer */}
+        <Dialog open={proofDialogOpen} onOpenChange={setProofDialogOpen}>
+          <DialogContent className="sm:max-w-2xl">
+            <DialogHeader>
+              <DialogTitle>Payment Proof</DialogTitle>
+            </DialogHeader>
+            {selectedProofUrl && (
+              <div className="mt-4">
+                <img 
+                  src={selectedProofUrl} 
+                  alt="Payment proof" 
+                  className="w-full h-auto rounded-md border"
+                />
+              </div>
+            )}
           </DialogContent>
         </Dialog>
       </div>
