@@ -1,10 +1,17 @@
 import { Link, useNavigate } from "react-router-dom";
-import { ShoppingCart, User, Menu, X, LogOut, LayoutDashboard } from "lucide-react";
+import { ShoppingCart, User, Menu, X, LogOut, LayoutDashboard, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCart } from "@/contexts/CartContext";
 import { useState } from "react";
 import logo from "@/assets/logo.png";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export default function Navbar() {
   const { user, isAdmin, signOut } = useAuth();
@@ -36,9 +43,28 @@ export default function Navbar() {
                 Profile
               </Link>
               {isAdmin && (
-                <Link to="/admin" className="text-muted-foreground hover:text-foreground transition-colors font-medium">
-                  <LayoutDashboard className="inline h-4 w-4 mr-1" />Admin
-                </Link>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      className="gap-1.5 text-muted-foreground hover:text-foreground font-medium h-auto p-0 hover:bg-transparent"
+                    >
+                      <LayoutDashboard className="h-4 w-4" />
+                      Admin
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-44">
+                    <DropdownMenuItem onClick={() => navigate("/admin")}>
+                      <LayoutDashboard className="h-4 w-4 mr-2" />
+                      Dashboard
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={() => navigate("/admin/settings")}>
+                      <Settings className="h-4 w-4 mr-2" />
+                      Store Settings
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               )}
             </>
           ) : null}
@@ -83,9 +109,16 @@ export default function Navbar() {
                 Profile
               </Link>
               {isAdmin && (
-                <Link to="/admin" className="block text-foreground font-medium py-2" onClick={() => setMobileOpen(false)}>
-                  Admin Dashboard
-                </Link>
+                <>
+                  <Link to="/admin" className="block text-foreground font-medium py-2" onClick={() => setMobileOpen(false)}>
+                    <LayoutDashboard className="inline h-4 w-4 mr-2" />
+                    Admin Dashboard
+                  </Link>
+                  <Link to="/admin/settings" className="block text-foreground font-medium py-2" onClick={() => setMobileOpen(false)}>
+                    <Settings className="inline h-4 w-4 mr-2" />
+                    Store Settings
+                  </Link>
+                </>
               )}
             </>
           )}
