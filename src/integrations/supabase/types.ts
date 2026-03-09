@@ -165,7 +165,9 @@ export type Database = {
           in_stock: boolean | null
           is_featured: boolean | null
           name: string
+          on_sale: boolean | null
           price: number
+          sale_price: number | null
           updated_at: string
         }
         Insert: {
@@ -177,7 +179,9 @@ export type Database = {
           in_stock?: boolean | null
           is_featured?: boolean | null
           name: string
+          on_sale?: boolean | null
           price: number
+          sale_price?: number | null
           updated_at?: string
         }
         Update: {
@@ -189,7 +193,9 @@ export type Database = {
           in_stock?: boolean | null
           is_featured?: boolean | null
           name?: string
+          on_sale?: boolean | null
           price?: number
+          sale_price?: number | null
           updated_at?: string
         }
         Relationships: [
@@ -232,6 +238,41 @@ export type Database = {
         }
         Relationships: []
       }
+      reviews: {
+        Row: {
+          comment: string | null
+          created_at: string
+          id: string
+          product_id: string
+          rating: number
+          user_id: string
+        }
+        Insert: {
+          comment?: string | null
+          created_at?: string
+          id?: string
+          product_id: string
+          rating: number
+          user_id: string
+        }
+        Update: {
+          comment?: string | null
+          created_at?: string
+          id?: string
+          product_id?: string
+          rating?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reviews_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           id: string
@@ -255,6 +296,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_product_rating: { Args: { product_uuid: string }; Returns: number }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
