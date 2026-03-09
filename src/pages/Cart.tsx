@@ -116,6 +116,14 @@ export default function Cart() {
       const { error: itemsError } = await supabase.from("order_items").insert(orderItems);
       if (itemsError) throw itemsError;
 
+      // Send order confirmation email
+      await supabase.functions.invoke("send-order-notifications", {
+        body: {
+          orderId: order.id,
+          eventType: "order_placed",
+        },
+      });
+
       clearCart();
       setShowBankDetails(false);
       setPaymentProof(null);
