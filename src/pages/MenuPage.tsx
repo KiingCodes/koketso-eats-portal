@@ -8,6 +8,53 @@ import { ShoppingCart, Plus } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import { motion } from "framer-motion";
 
+// Import menu images
+import chickenBurger from "@/assets/menu/chicken-burger.jpg";
+import classicBeefBurger from "@/assets/menu/classic-beef-burger.jpg";
+import doubleStackBurger from "@/assets/menu/double-stack-burger.jpg";
+import veggieBurger from "@/assets/menu/veggie-burger.jpg";
+import beefStew from "@/assets/menu/beef-stew.jpg";
+import chickenCurry from "@/assets/menu/chicken-curry.jpg";
+import lambStew from "@/assets/menu/lamb-stew.jpg";
+import sundayRoast from "@/assets/menu/sunday-roast.jpg";
+import breakfastCombo from "@/assets/menu/breakfast-combo.jpg";
+import creamyMushroomPasta from "@/assets/menu/creamy-mushroom-pasta.jpg";
+import spicyTomatoPasta from "@/assets/menu/spicy-tomato-pasta.jpg";
+import cheesecake from "@/assets/menu/cheesecake.jpg";
+import chocolateFudgeCake from "@/assets/menu/chocolate-fudge-cake.jpg";
+import redVelvetCake from "@/assets/menu/red-velvet-cake.jpg";
+import carrotCake from "@/assets/menu/carrot-cake.jpg";
+import bananaBread from "@/assets/menu/banana-bread.jpg";
+import sourdoughLoaf from "@/assets/menu/sourdough-loaf.jpg";
+import ciabattaRoll from "@/assets/menu/ciabatta-roll.jpg";
+import cappuccino from "@/assets/menu/cappuccino.jpg";
+import icedLatte from "@/assets/menu/iced-latte.jpg";
+import freshOrangeJuice from "@/assets/menu/fresh-orange-juice.jpg";
+
+const productImages: Record<string, string> = {
+  "Chicken Burger": chickenBurger,
+  "Classic Beef Burger": classicBeefBurger,
+  "Double Stack Burger": doubleStackBurger,
+  "Veggie Burger": veggieBurger,
+  "Beef Stew & Pap": beefStew,
+  "Chicken Curry & Rice": chickenCurry,
+  "Lamb Stew": lambStew,
+  "Sunday Roast Platter": sundayRoast,
+  "Breakfast Combo": breakfastCombo,
+  "Creamy Mushroom Pasta": creamyMushroomPasta,
+  "Spicy Tomato Pasta": spicyTomatoPasta,
+  "Cheesecake Slice": cheesecake,
+  "Chocolate Fudge Cake": chocolateFudgeCake,
+  "Red Velvet Cake": redVelvetCake,
+  "Carrot Cake": carrotCake,
+  "Banana Bread": bananaBread,
+  "Sourdough Loaf": sourdoughLoaf,
+  "Ciabatta Roll": ciabattaRoll,
+  "Cappuccino": cappuccino,
+  "Iced Latte": icedLatte,
+  "Fresh Orange Juice": freshOrangeJuice,
+};
+
 interface Category {
   id: string;
   name: string;
