@@ -91,6 +91,10 @@ export default function AdminDashboard() {
       toast.error("Name and price are required");
       return;
     }
+    if (editProduct?.on_sale && (!editProduct?.sale_price || editProduct.sale_price >= editProduct.price)) {
+      toast.error("Sale price must be less than regular price");
+      return;
+    }
     try {
       if (editProduct.id) {
         const { error } = await supabase.from("products").update({
@@ -101,6 +105,8 @@ export default function AdminDashboard() {
           in_stock: editProduct.in_stock ?? true,
           is_featured: editProduct.is_featured ?? false,
           category_id: editProduct.category_id,
+          on_sale: editProduct.on_sale ?? false,
+          sale_price: editProduct.on_sale ? editProduct.sale_price : null,
         }).eq("id", editProduct.id);
         if (error) throw error;
         toast.success("Product updated!");
@@ -113,6 +119,8 @@ export default function AdminDashboard() {
           in_stock: editProduct.in_stock ?? true,
           is_featured: editProduct.is_featured ?? false,
           category_id: editProduct.category_id,
+          on_sale: editProduct.on_sale ?? false,
+          sale_price: editProduct.on_sale ? editProduct.sale_price : null,
         });
         if (error) throw error;
         toast.success("Product added!");
@@ -197,9 +205,20 @@ export default function AdminDashboard() {
                         <h3 className="font-semibold">{p.name}</h3>
                         {!p.in_stock && <Badge variant="destructive">Out of Stock</Badge>}
                         {p.is_featured && <Badge>Featured</Badge>}
+                        {p.on_sale && <Badge className="bg-green-600">On Sale</Badge>}
                       </div>
                       <p className="text-sm text-muted-foreground">
-                        R{p.price.toFixed(2)} • {categories.find((c) => c.id === p.category_id)?.name || "Uncategorized"}
+                        {p.on_sale && p.sale_price ? (
+                          <>
+                            <span className="line-through text-muted-foreground/60">R{p.price.toFixed(2)}</span>
+                            {" "}
+                            <span className="text-green-600 font-semibold">R{p.sale_price.toFixed(2)}</span>
+                          </>
+                        ) : (
+                          `R${p.price.toFixed(2)}`
+                        )}
+                        {" • "}
+                        {categories.find((c) => c.id === p.category_id)?.name || "Uncategorized"}
                       </p>
                     </div>
                     <div className="flex gap-1">
@@ -302,6 +321,18 @@ export default function AdminDashboard() {
                   <Switch checked={editProduct?.is_featured ?? false} onCheckedChange={(v) => setEditProduct({ ...editProduct, is_featured: v })} />
                   <Label>Featured</Label>
                 </div>
+              </div>
+              <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <Switch checked={editProduct?.on_sale ?? false} onCheckedChange={(v) => setEditProduct({ ...editProduct, on_sale: v, sale_price: v ? editProduct?.sale_price : null })} />
+                  <Label>On Sale</Label>
+                </div>
+                {editProduct?.on_sale && (
+                  <div>
+                    <Label>Sale Price (R)</Label>
+                    <Input type="number" step="0.01" value={editProduct?.sale_price || ""} onChange={(e) => setEditProduct({ ...editProduct, sale_price: parseFloat(e.target.value) })} placeholder="Enter sale price" />
+                  </div>
+                )}
               </div>
               <Button onClick={saveProduct} className="w-full">Save Product</Button>
             </div>
