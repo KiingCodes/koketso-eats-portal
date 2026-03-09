@@ -26,6 +26,8 @@ interface Product {
   in_stock: boolean | null;
   is_featured: boolean | null;
   category_id: string | null;
+  on_sale: boolean | null;
+  sale_price: number | null;
 }
 
 interface Category {
@@ -205,14 +207,14 @@ export default function AdminDashboard() {
                         <h3 className="font-semibold">{p.name}</h3>
                         {!p.in_stock && <Badge variant="destructive">Out of Stock</Badge>}
                         {p.is_featured && <Badge>Featured</Badge>}
-                        {p.on_sale && <Badge className="bg-green-600">On Sale</Badge>}
+                        {p.on_sale && <Badge className="bg-emerald-600 hover:bg-emerald-700">On Sale</Badge>}
                       </div>
                       <p className="text-sm text-muted-foreground">
                         {p.on_sale && p.sale_price ? (
                           <>
                             <span className="line-through text-muted-foreground/60">R{p.price.toFixed(2)}</span>
                             {" "}
-                            <span className="text-green-600 font-semibold">R{p.sale_price.toFixed(2)}</span>
+                            <span className="text-emerald-600 font-semibold">R{p.sale_price.toFixed(2)}</span>
                           </>
                         ) : (
                           `R${p.price.toFixed(2)}`
