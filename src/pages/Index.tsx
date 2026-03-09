@@ -24,6 +24,9 @@ interface Product {
 
 export default function Index() {
   const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
+  const autoplayPlugin = useRef(
+    Autoplay({ delay: 4000, stopOnInteraction: true })
+  );
 
   useEffect(() => {
     supabase
