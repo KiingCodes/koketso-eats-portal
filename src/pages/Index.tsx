@@ -1,13 +1,17 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ArrowRight, UtensilsCrossed, Soup, Clock, Cake } from "lucide-react";
+import { ArrowRight, UtensilsCrossed, Soup, Clock } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import heroBanner from "@/assets/hero-banner.jpg";
+import carouselStew from "@/assets/carousel-stew.jpg";
+import carouselBakery from "@/assets/carousel-bakery.jpg";
+import carouselPasta from "@/assets/carousel-pasta.jpg";
 import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
-
+import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from "@/components/ui/carousel";
+import Autoplay from "embla-carousel-autoplay";
 
 interface Product {
   id: string;
