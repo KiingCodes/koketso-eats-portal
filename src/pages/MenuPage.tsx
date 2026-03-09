@@ -132,7 +132,9 @@ export default function MenuPage() {
               className="bg-card rounded-lg border overflow-hidden group"
             >
               <div className="aspect-square bg-muted relative overflow-hidden">
-                {product.image_url ? (
+                {productImages[product.name] ? (
+                  <img src={productImages[product.name]} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                ) : product.image_url ? (
                   <img src={product.image_url} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-muted-foreground text-4xl">
