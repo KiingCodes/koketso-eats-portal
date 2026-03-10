@@ -32,6 +32,28 @@ import ciabattaRoll from "@/assets/menu/ciabatta-roll.jpg";
 import cappuccino from "@/assets/menu/cappuccino.jpg";
 import icedLatte from "@/assets/menu/iced-latte.jpg";
 import freshOrangeJuice from "@/assets/menu/fresh-orange-juice.jpg";
+// New menu item images
+import friedChickenMeal from "@/assets/menu/fried-chicken-meal.jpg";
+import braaiChickenMeal from "@/assets/menu/braai-chicken-meal.jpg";
+import beefSkewers from "@/assets/menu/beef-skewers.jpg";
+import friedRiceChicken from "@/assets/menu/fried-rice-chicken.jpg";
+import friedRiceBeef from "@/assets/menu/fried-rice-beef.jpg";
+import friedRiceMixed from "@/assets/menu/fried-rice-mixed.jpg";
+import porkRibs from "@/assets/menu/pork-ribs.jpg";
+import friedFish from "@/assets/menu/fried-fish.jpg";
+import grilledFish from "@/assets/menu/grilled-fish.jpg";
+import kota from "@/assets/menu/kota.jpg";
+import cheeseBurger from "@/assets/menu/cheese-burger.jpg";
+import regularChips from "@/assets/menu/regular-chips.jpg";
+import loadedChips from "@/assets/menu/loaded-chips.jpg";
+import eggBaconSandwich from "@/assets/menu/egg-bacon-sandwich.jpg";
+import croissants from "@/assets/menu/croissants.jpg";
+import muffins from "@/assets/menu/muffins.jpg";
+import doughnuts from "@/assets/menu/doughnuts.jpg";
+import coffee from "@/assets/menu/coffee.jpg";
+import tea from "@/assets/menu/tea.jpg";
+import coldDrinks from "@/assets/menu/cold-drinks.jpg";
+import milkshakes from "@/assets/menu/milkshakes.jpg";
 
 const productImages: Record<string, string> = {
   "Chicken Burger": chickenBurger,
@@ -55,6 +77,27 @@ const productImages: Record<string, string> = {
   "Cappuccino": cappuccino,
   "Iced Latte": icedLatte,
   "Fresh Orange Juice": freshOrangeJuice,
+  "Fried Chicken Meal": friedChickenMeal,
+  "Braai Chicken Meal": braaiChickenMeal,
+  "Beef Skewers": beefSkewers,
+  "Fried Rice - Chicken": friedRiceChicken,
+  "Fried Rice - Beef": friedRiceBeef,
+  "Fried Rice - Mixed": friedRiceMixed,
+  "Pork Ribs": porkRibs,
+  "Fried Fish": friedFish,
+  "Grilled Fish": grilledFish,
+  "Kota": kota,
+  "Cheese Burger": cheeseBurger,
+  "Regular Chips": regularChips,
+  "Loaded Chips": loadedChips,
+  "Egg & Bacon Sandwich": eggBaconSandwich,
+  "Croissants": croissants,
+  "Muffins": muffins,
+  "Doughnuts": doughnuts,
+  "Coffee": coffee,
+  "Tea": tea,
+  "Cold Drinks": coldDrinks,
+  "Milkshakes": milkshakes,
 };
 
 interface Category {
