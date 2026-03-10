@@ -135,9 +135,10 @@ export default function AdminDashboard() {
       setDialogOpen(false);
       setEditProduct(null);
       loadData();
-    } catch (err: any) {
-      toast.error(err.message);
-    }
+    } catch (err) {
+  const error = err as Error;
+  toast.error(error.message);
+}
   };
 
   const deleteProduct = async (id: string) => {

@@ -26,46 +26,77 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
 
+  // Check if the user is an admin
+  const checkAdmin = async (userId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", userId)
+        .eq("role", "admin")
+        .maybeSingle();
+
+      if (error) console.error("Error checking admin role:", error);
+      setIsAdmin(!!data);
+    } catch (err) {
+      console.error("Unexpected error checking admin role:", err);
+      setIsAdmin(false);
+    }
+  };
+
   useEffect(() => {
+    // Initialize session on load
+    const initSession = async () => {
+      setLoading(true);
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        setSession(session);
+        setUser(session?.user ?? null);
+
+        if (session?.user) {
+          await checkAdmin(session.user.id);
+        } else {
+          setIsAdmin(false);
+        }
+      } catch (err) {
+        console.error("Error initializing session:", err);
+        setUser(null);
+        setSession(null);
+        setIsAdmin(false);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    initSession();
+
+    // Listen for auth changes (login/logout)
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (_event, session) => {
         setSession(session);
         setUser(session?.user ?? null);
+
         if (session?.user) {
-          const { data } = await supabase
-            .from("user_roles")
-            .select("role")
-            .eq("user_id", session.user.id)
-            .eq("role", "admin")
-            .maybeSingle();
-          setIsAdmin(!!data);
+          await checkAdmin(session.user.id);
         } else {
           setIsAdmin(false);
         }
-        setLoading(false);
       }
     );
-
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        supabase
-          .from("user_roles")
-          .select("role")
-          .eq("user_id", session.user.id)
-          .eq("role", "admin")
-          .maybeSingle()
-          .then(({ data }) => setIsAdmin(!!data));
-      }
-      setLoading(false);
-    });
 
     return () => subscription.unsubscribe();
   }, []);
 
+  // Sign out function
   const signOut = async () => {
-    await supabase.auth.signOut();
+    try {
+      await supabase.auth.signOut();
+      setUser(null);
+      setSession(null);
+      setIsAdmin(false);
+    } catch (err) {
+      console.error("Error signing out:", err);
+    }
   };
 
   return (
