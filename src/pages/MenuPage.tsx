@@ -35,8 +35,8 @@ import freshOrangeJuice from "@/assets/menu/fresh-orange-juice.jpg";
 
 const productImages: Record<string, string> = {
   "Chicken Burger": chickenBurger,
-  "Classic Beef Burger": classicBeefBurger,
-  "Double Stack Burger": doubleStackBurger,
+  "Beef Burger": classicBeefBurger,
+  "Double Burger": doubleStackBurger,
   "Veggie Burger": veggieBurger,
   "Beef Stew & Pap": beefStew,
   "Chicken Curry & Rice": chickenCurry,
