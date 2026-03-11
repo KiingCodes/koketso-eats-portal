@@ -19,6 +19,12 @@ export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const navigate = useNavigate();
 
+  const handleSignOut = async () => {
+    await signOut();
+    setMobileOpen(false);
+    navigate("/");
+  };
+
   return (
     <nav className="sticky top-0 z-50 bg-background/95 backdrop-blur border-b">
       <div className="container mx-auto px-4 flex items-center justify-between h-16">
@@ -80,7 +86,7 @@ export default function Navbar() {
             )}
           </Button>
           {user ? (
-            <Button variant="ghost" size="icon" onClick={signOut}>
+            <Button variant="ghost" size="icon" onClick={handleSignOut}>
               <LogOut className="h-5 w-5" />
             </Button>
           ) : (
@@ -120,6 +126,13 @@ export default function Navbar() {
                   </Link>
                 </>
               )}
+              <button
+                className="block text-destructive font-medium py-2 w-full text-left"
+                onClick={handleSignOut}
+              >
+                <LogOut className="inline h-4 w-4 mr-2" />
+                Sign Out
+              </button>
             </>
           )}
         </div>
