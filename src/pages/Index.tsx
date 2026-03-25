@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowRight, UtensilsCrossed, Soup, Clock } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import heroBanner from "@/assets/hero-banner.jpg";
+import logo from "@/assets/logo.png";
 import carouselStew from "@/assets/carousel-stew.jpg";
 import carouselBakery from "@/assets/carousel-bakery.jpg";
 import carouselPasta from "@/assets/carousel-pasta.jpg";
