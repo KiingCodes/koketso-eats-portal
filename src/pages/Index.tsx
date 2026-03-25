@@ -4,7 +4,6 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowRight, UtensilsCrossed, Soup, Clock } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import heroBanner from "@/assets/hero-banner.jpg";
-import logo from "@/assets/logo.png";
 import carouselStew from "@/assets/carousel-stew.jpg";
 import carouselBakery from "@/assets/carousel-bakery.jpg";
 import carouselPasta from "@/assets/carousel-pasta.jpg";
@@ -47,20 +46,16 @@ export default function Index() {
 
       {/* Hero */}
       <section className="relative h-[70vh] min-h-[500px] overflow-hidden">
-        <img src={heroBanner} alt="Delicious food at Koketso" className="absolute inset-0 w-full h-full object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-r from-foreground/80 to-foreground/30" />
-        <div className="relative z-10 container mx-auto px-4 h-full flex items-center">
+        <img src={heroBanner} alt="Koketso Dining & Bakery" className="absolute inset-0 w-full h-full object-contain bg-black" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+        <div className="relative z-10 container mx-auto px-4 h-full flex items-end pb-12 justify-center">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7 }}
-            className="max-w-lg"
+            className="text-center"
           >
-            <img src={logo} alt="Koketso Dining & Bakery" className="h-32 w-32 md:h-44 md:w-44 lg:h-52 lg:w-52 rounded-full object-cover mb-4 border-4 border-card/30 shadow-2xl" />
-            <p className="text-card/80 text-lg mb-8">
-              From hearty stews & pap to fresh pastas, rice dishes, baked treats & more — authentic flavours delivered to your door or ready for pickup.
-            </p>
-            <div className="flex gap-3">
+            <div className="flex gap-3 justify-center">
               <Button asChild size="lg">
                 <Link to="/menu">
                   Order Now <ArrowRight className="ml-2 h-5 w-5" />
