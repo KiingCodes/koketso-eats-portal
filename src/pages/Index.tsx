@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowRight, UtensilsCrossed, Soup, Clock } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import heroBanner from "@/assets/hero-banner.jpg";
+import logo from "@/assets/logo.png";
 import carouselStew from "@/assets/carousel-stew.jpg";
 import carouselBakery from "@/assets/carousel-bakery.jpg";
 import carouselPasta from "@/assets/carousel-pasta.jpg";
@@ -55,9 +56,7 @@ export default function Index() {
             transition={{ duration: 0.7 }}
             className="max-w-lg"
           >
-            <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold text-card mb-4">
-              Koketso Dining & Bakery
-            </h1>
+            <img src={logo} alt="Koketso Dining & Bakery" className="h-32 w-32 md:h-44 md:w-44 lg:h-52 lg:w-52 rounded-full object-cover mb-4 border-4 border-card/30 shadow-2xl" />
             <p className="text-card/80 text-lg mb-8">
               From hearty stews & pap to fresh pastas, rice dishes, baked treats & more — authentic flavours delivered to your door or ready for pickup.
             </p>
