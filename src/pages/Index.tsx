@@ -12,6 +12,7 @@ import { useEffect, useState, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from "@/components/ui/carousel";
 import Autoplay from "embla-carousel-autoplay";
+import Footer from "@/components/Footer";
 
 interface Product {
   id: string;
@@ -232,11 +233,7 @@ export default function Index() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t py-8">
-        <div className="container mx-auto px-4 text-center text-muted-foreground text-sm">
-          <p>© {new Date().getFullYear()} Koketso Dining & Bakery. All rights reserved.</p>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }
