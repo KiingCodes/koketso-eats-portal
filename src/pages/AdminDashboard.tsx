@@ -11,7 +11,7 @@ import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "sonner";
-import { Plus, Edit, Trash2, Package, Users, DollarSign, ShoppingBag, CheckCircle2, XCircle, FileText } from "lucide-react";
+import { Plus, Edit, Trash2, Package, Users, DollarSign, ShoppingBag, CheckCircle2, XCircle, FileText, Upload } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
@@ -62,6 +62,7 @@ export default function AdminDashboard() {
   const [todaySales, setTodaySales] = useState(0);
   const [proofDialogOpen, setProofDialogOpen] = useState(false);
   const [selectedProofUrl, setSelectedProofUrl] = useState<string | null>(null);
+  const [imageUploading, setImageUploading] = useState(false);
 
   useEffect(() => {
     if (!loading && !isAdmin) {
@@ -147,6 +148,32 @@ export default function AdminDashboard() {
     else {
       toast.success("Product deleted");
       loadData();
+    }
+  };
+
+  const handleImageUpload = async (file?: File) => {
+    if (!file) return;
+
+    setImageUploading(true);
+    try {
+      const extension = file.name.split(".").pop() || "jpg";
+      const path = `${crypto.randomUUID()}.${extension}`;
+      const { error } = await supabase.storage
+        .from("product-images")
+        .upload(path, file, {
+          cacheControl: "3600",
+          upsert: false,
+        });
+
+      if (error) throw error;
+
+      const { data } = supabase.storage.from("product-images").getPublicUrl(path);
+      setEditProduct((current) => (current ? { ...current, image_url: data.publicUrl } : current));
+      toast.success("Image uploaded");
+    } catch (err) {
+      toast.error((err as Error).message || "Failed to upload image");
+    } finally {
+      setImageUploading(false);
     }
   };
 
@@ -409,6 +436,32 @@ export default function AdminDashboard() {
               <div>
                 <Label>Image URL</Label>
                 <Input value={editProduct?.image_url || ""} onChange={(e) => setEditProduct({ ...editProduct, image_url: e.target.value })} placeholder="https://..." />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="product-image-upload">Upload Image</Label>
+                <Input
+                  id="product-image-upload"
+                  type="file"
+                  accept="image/*"
+                  disabled={imageUploading}
+                  onChange={(e) => void handleImageUpload(e.target.files?.[0])}
+                />
+                <p className="text-xs text-muted-foreground">
+                  Upload a product photo or paste an image URL above.
+                </p>
+                {imageUploading && (
+                  <div className="inline-flex items-center gap-2 text-sm text-muted-foreground">
+                    <Upload className="h-4 w-4 animate-pulse" />
+                    Uploading image...
+                  </div>
+                )}
+                {editProduct?.image_url && (
+                  <img
+                    src={editProduct.image_url}
+                    alt={editProduct.name || "Product preview"}
+                    className="h-28 w-full rounded-md border object-cover"
+                  />
+                )}
               </div>
               <div className="flex items-center gap-6">
                 <div className="flex items-center gap-2">

@@ -9,6 +9,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import { useEffect } from "react";
+import Footer from "@/components/Footer";
+import jeweliqLogo from "@/assets/jeweliq-logo.webp";
 
 export default function Auth() {
   const [isLogin, setIsLogin] = useState(true);
@@ -18,11 +20,11 @@ export default function Auth() {
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
 
   useEffect(() => {
-    if (user) navigate("/");
-  }, [user, navigate]);
+    if (!authLoading && user) navigate("/");
+  }, [authLoading, user, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -38,7 +40,6 @@ export default function Auth() {
         if (error) throw error;
 
         toast.success("Welcome back!");
-        navigate("/");
       } else {
         const { error } = await supabase.auth.signUp({
           email,
@@ -79,9 +80,15 @@ export default function Auth() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
+    <div className="min-h-screen bg-background flex flex-col">
+      <div className="flex-1 flex items-center justify-center p-4">
+        <Card className="w-full max-w-md">
+          <CardHeader className="text-center">
+            <img
+              src={jeweliqLogo}
+              alt="JewelIQ"
+              className="mx-auto h-14 w-auto max-w-[220px] object-contain"
+            />
           <CardTitle className="font-display text-2xl">
             {isLogin ? "Welcome Back" : "Join Koketso"}
           </CardTitle>
@@ -91,9 +98,9 @@ export default function Auth() {
               ? "Sign in to your account"
               : "Create your account to start ordering"}
           </CardDescription>
-        </CardHeader>
+          </CardHeader>
 
-        <CardContent className="space-y-4">
+          <CardContent className="space-y-4">
           <Button
             variant="outline"
             className="w-full"
@@ -191,8 +198,10 @@ export default function Auth() {
               {isLogin ? "Sign Up" : "Sign In"}
             </button>
           </p>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      </div>
+      <Footer />
     </div>
   );
 }

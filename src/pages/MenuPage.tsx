@@ -287,10 +287,10 @@ export default function MenuPage() {
                       onClick={() => handleQuickView(product)}
                     >
                       <div className="aspect-square bg-muted relative overflow-hidden">
-                        {productImages[product.name] ? (
-                          <img src={productImages[product.name]} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-                        ) : product.image_url ? (
+                        {product.image_url ? (
                           <img src={product.image_url} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                        ) : productImages[product.name] ? (
+                          <img src={productImages[product.name]} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center text-muted-foreground text-4xl">🍽️</div>
                         )}
@@ -356,10 +356,10 @@ export default function MenuPage() {
                   onClick={() => handleQuickView(product)}
                 >
                   <div className="aspect-square bg-muted relative overflow-hidden">
-                    {productImages[product.name] ? (
-                      <img src={productImages[product.name]} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-                    ) : product.image_url ? (
+                    {product.image_url ? (
                       <img src={product.image_url} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                    ) : productImages[product.name] ? (
+                      <img src={productImages[product.name]} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-muted-foreground text-4xl">
                         🍽️
