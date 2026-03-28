@@ -10,7 +10,7 @@ import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import { useEffect } from "react";
 import Footer from "@/components/Footer";
-import jeweliqLogo from "@/assets/jeweliq-logo.webp";
+import logo from "@/assets/logo.png";
 
 export default function Auth() {
   const [isLogin, setIsLogin] = useState(true);
@@ -30,19 +30,26 @@ export default function Auth() {
     e.preventDefault();
     setLoading(true);
 
+    const normalizedEmail = email.trim().toLowerCase();
+
     try {
       if (isLogin) {
-        const { error } = await supabase.auth.signInWithPassword({
-          email,
+        const { data, error } = await supabase.auth.signInWithPassword({
+          email: normalizedEmail,
           password,
         });
 
         if (error) throw error;
 
+        if (!data.session) {
+          throw new Error("Sign-in did not complete. Please try again.");
+        }
+
         toast.success("Welcome back!");
+        navigate("/");
       } else {
         const { error } = await supabase.auth.signUp({
-          email,
+          email: normalizedEmail,
           password,
           options: {
             data: { full_name: fullName },
@@ -85,8 +92,8 @@ export default function Auth() {
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
             <img
-              src={jeweliqLogo}
-              alt="JewelIQ"
+              src={logo}
+              alt="Koketso Dining & Bakery"
               className="mx-auto h-14 w-auto max-w-[220px] object-contain"
             />
           <CardTitle className="font-display text-2xl">

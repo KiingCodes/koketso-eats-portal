@@ -59,6 +59,8 @@ export default function AdminDashboard() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [editProduct, setEditProduct] = useState<Partial<Product> | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [categoryDialogOpen, setCategoryDialogOpen] = useState(false);
+  const [editCategory, setEditCategory] = useState<Partial<Category> | null>(null);
   const [todaySales, setTodaySales] = useState(0);
   const [proofDialogOpen, setProofDialogOpen] = useState(false);
   const [selectedProofUrl, setSelectedProofUrl] = useState<string | null>(null);
@@ -149,6 +151,60 @@ export default function AdminDashboard() {
       toast.success("Product deleted");
       loadData();
     }
+  };
+
+  const saveCategory = async () => {
+    if (!editCategory?.name?.trim()) {
+      toast.error("Category name is required");
+      return;
+    }
+
+    try {
+      if (editCategory.id) {
+        const { error } = await supabase
+          .from("categories")
+          .update({
+            name: editCategory.name.trim(),
+            sort_order: editCategory.sort_order ?? 0,
+          })
+          .eq("id", editCategory.id);
+
+        if (error) throw error;
+        toast.success("Category updated!");
+      } else {
+        const { error } = await supabase.from("categories").insert({
+          name: editCategory.name.trim(),
+          sort_order: editCategory.sort_order ?? categories.length,
+        });
+
+        if (error) throw error;
+        toast.success("Category added!");
+      }
+
+      setCategoryDialogOpen(false);
+      setEditCategory(null);
+      loadData();
+    } catch (err) {
+      toast.error((err as Error).message || "Failed to save category");
+    }
+  };
+
+  const deleteCategory = async (id: string) => {
+    const linkedProducts = products.some((product) => product.category_id === id);
+
+    if (linkedProducts) {
+      toast.error("Move or delete products in this category first");
+      return;
+    }
+
+    const { error } = await supabase.from("categories").delete().eq("id", id);
+    if (error) {
+      toast.error(error.message || "Failed to delete category");
+      return;
+    }
+
+    toast.success("Category deleted");
+    loadData();
   };
 
   const handleImageUpload = async (file?: File) => {
@@ -246,6 +302,7 @@ export default function AdminDashboard() {
         <Tabs defaultValue="products">
           <TabsList>
             <TabsTrigger value="products">Products</TabsTrigger>
+            <TabsTrigger value="categories">Categories</TabsTrigger>
             <TabsTrigger value="orders">Orders</TabsTrigger>
           </TabsList>
 
@@ -293,6 +350,54 @@ export default function AdminDashboard() {
                   </CardContent>
                 </Card>
               ))}
+            </div>
+          </TabsContent>
+
+          <TabsContent value="categories" className="space-y-4 mt-4">
+            <div className="flex justify-between items-center">
+              <h2 className="text-xl font-semibold">Categories</h2>
+              <Button
+                onClick={() => {
+                  setEditCategory({ sort_order: categories.length });
+                  setCategoryDialogOpen(true);
+                }}
+              >
+                <Plus className="h-4 w-4 mr-1" /> Add Category
+              </Button>
+            </div>
+
+            <div className="grid gap-3">
+              {categories.map((category) => {
+                const categoryProductCount = products.filter((product) => product.category_id === category.id).length;
+
+                return (
+                  <Card key={category.id}>
+                    <CardContent className="p-4 flex items-center justify-between gap-3">
+                      <div>
+                        <h3 className="font-semibold">{category.name}</h3>
+                        <p className="text-sm text-muted-foreground">
+                          Sort order: {category.sort_order ?? 0} • {categoryProductCount} item{categoryProductCount === 1 ? "" : "s"}
+                        </p>
+                      </div>
+                      <div className="flex gap-1">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => {
+                            setEditCategory(category);
+                            setCategoryDialogOpen(true);
+                          }}
+                        >
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button variant="ghost" size="icon" onClick={() => deleteCategory(category.id)}>
+                          <Trash2 className="h-4 w-4 text-destructive" />
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                );
+              })}
             </div>
           </TabsContent>
 
@@ -486,6 +591,32 @@ export default function AdminDashboard() {
                 )}
               </div>
               <Button onClick={saveProduct} className="w-full">Save Product</Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        <Dialog open={categoryDialogOpen} onOpenChange={setCategoryDialogOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>{editCategory?.id ? "Edit Category" : "Add Category"}</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div>
+                <Label>Name</Label>
+                <Input
+                  value={editCategory?.name || ""}
+                  onChange={(e) => setEditCategory({ ...editCategory, name: e.target.value })}
+                />
+              </div>
+              <div>
+                <Label>Sort Order</Label>
+                <Input
+                  type="number"
+                  value={editCategory?.sort_order ?? 0}
+                  onChange={(e) => setEditCategory({ ...editCategory, sort_order: parseInt(e.target.value || "0", 10) })}
+                />
+              </div>
+              <Button onClick={saveCategory} className="w-full">Save Category</Button>
             </div>
           </DialogContent>
         </Dialog>
