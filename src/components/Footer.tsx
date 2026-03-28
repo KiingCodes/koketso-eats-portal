@@ -1,4 +1,4 @@
-import footerLogo from "@/assets/footer-jeweliq.png";
+import footerLogo from "@/assets/footer-jeweliq-optimized.png";
 
 export default function Footer() {
   return (
