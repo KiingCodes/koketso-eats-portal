@@ -2,6 +2,14 @@ import { createContext, useContext, useEffect, useState, ReactNode } from "react
 import { User, Session } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 
+const clearStoredSession = () => {
+  if (typeof window === "undefined") return;
+
+  Object.keys(window.localStorage)
+    .filter((key) => key.startsWith("sb-") && key.endsWith("-auth-token"))
+    .forEach((key) => window.localStorage.removeItem(key));
+};
+
 interface AuthContextType {
   user: User | null;
   session: Session | null;
@@ -27,7 +35,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isAdmin, setIsAdmin] = useState(false);
 
   const checkAdmin = async (userId: string) => {
-    setLoading(true);
     try {
       console.log("[Auth] Checking admin role for:", userId);
       const { data, error } = await supabase
@@ -39,30 +46,34 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       if (error) {
         console.error("[Auth] Error checking admin role:", error);
-        setIsAdmin(false);
-        return;
+        return false;
       }
       console.log("[Auth] Admin check result:", data);
-      setIsAdmin(!!data);
+      return !!data;
     } catch (err) {
       console.error("[Auth] Unexpected error checking admin role:", err);
-      setIsAdmin(false);
-    } finally {
-      setLoading(false);
+      return false;
     }
   };
 
   useEffect(() => {
+    let mounted = true;
+
     const syncSession = async (nextSession: Session | null) => {
+      if (!mounted) return;
+
       setSession(nextSession);
       setUser(nextSession?.user ?? null);
 
       if (nextSession?.user) {
-        await checkAdmin(nextSession.user.id);
+        const admin = await checkAdmin(nextSession.user.id);
+        if (!mounted) return;
+        setIsAdmin(admin);
       } else {
         setIsAdmin(false);
-        setLoading(false);
       }
+
+      if (mounted) setLoading(false);
     };
 
     // Set up auth state listener FIRST
@@ -78,30 +89,60 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     );
 
-    // THEN get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      console.log("[Auth] Initial session:", session?.user?.email ?? "none");
-      void syncSession(session);
-    });
+    const initAuth = async () => {
+      try {
+        const { data, error } = await supabase.auth.getSession();
 
-    return () => subscription.unsubscribe();
+        if (error) {
+          console.error("[Auth] Failed to restore session:", error);
+          clearStoredSession();
+          await supabase.auth.signOut({ scope: "local" });
+          if (!mounted) return;
+          setUser(null);
+          setSession(null);
+          setIsAdmin(false);
+          setLoading(false);
+          return;
+        }
+
+        console.log("[Auth] Initial session:", data.session?.user?.email ?? "none");
+        await syncSession(data.session);
+      } catch (err) {
+        console.error("[Auth] Unexpected session restore error:", err);
+        clearStoredSession();
+        if (!mounted) return;
+        setUser(null);
+        setSession(null);
+        setIsAdmin(false);
+        setLoading(false);
+      }
+    };
+
+    void initAuth();
+
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
   }, []);
 
   const signOut = async () => {
     try {
       console.log("[Auth] Signing out...");
       setLoading(true);
-      const { error } = await supabase.auth.signOut();
+      const { error } = await supabase.auth.signOut({ scope: "local" });
       if (error) {
         console.error("[Auth] Sign out error:", error);
         // Force clear local state even if API call fails
       }
+      clearStoredSession();
       setUser(null);
       setSession(null);
       setIsAdmin(false);
     } catch (err) {
       console.error("[Auth] Error signing out:", err);
       // Force clear state
+      clearStoredSession();
       setUser(null);
       setSession(null);
       setIsAdmin(false);
